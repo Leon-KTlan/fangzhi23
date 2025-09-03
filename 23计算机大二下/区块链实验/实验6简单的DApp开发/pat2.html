@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宠物之家 - 寻找你毛茸茸的朋友</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Lucide图标库并使用defer确保在DOM解析后执行 -->
+    <script src="https://unpkg.com/lucide-react@0.378.0/dist/umd/lucide.min.js"></script>
+    <!-- 引入自定义字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 自定义样式 */
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #FEFBF6; /* 温馨的米白色背景 */
+            color: #3D3B40;
+        }
+
+        /* 加载动画样式 */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #FEFBF6;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        }
+
+        .paw-print-path {
+            animation: draw 2s linear forwards;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+        }
+
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        /* 页面切换的平滑过渡效果 */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 管理员模式特定样式 */
+        .admin-only {
+            display: none;
+        }
+        body.admin-mode .admin-only {
+            display: block;
+        }
+        body.admin-mode .user-only {
+            display: none;
+        }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FEFBF6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e0c5a0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4b38a;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 加载动画 -->
+    <div id="loader">
+        <svg class="w-32 h-32 text-orange-400" viewBox="0 0 100 100">
+            <path class="paw-print-path" d="M25 50 C20 40, 30 30, 35 30 S50 35, 50 45 M75 50 C80 40, 70 30, 65 30 S50 35, 50 45 M30 70 C20 65, 20 55, 30 55 S40 60, 40 70 M70 70 C80 65, 80 55, 70 55 S60 60, 60 70 M50 85 C40 80, 40 70, 50 70 S60 80, 50 85" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+
+    <!-- 导航栏 -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="flex items-center space-x-2 nav-link" data-page="home">
+                <i data-lucide="paw-print" class="text-orange-500"></i>
+                <span class="text-xl font-bold text-gray-700">宠物之家</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#" class="text-gray-600 hover:text-orange-500 transition-colors nav-link" data-page="home">首页</a>
+                <a href="#" class="text-gray-600 hover:text-orange-500 transition-colors nav-link" data-page="browse">领养中心</a>
+                <a href="#" class="text-gray-600 hover:text-orange-500 transition-colors nav-link" data-page="faq">常见问题</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                 <!-- 模式切换开关 -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-medium text-gray-500">用户</span>
+                    <label for="mode-toggle" class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="mode-toggle" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+                    </label>
+                    <span class="text-sm font-medium text-gray-500">管理员</span>
+                </div>
+                <a href="#" class="text-gray-600 hover:text-orange-500 transition-colors nav-link" data-page="profile">
+                    <i data-lucide="user-circle-2"></i>
+                </a>
+                <button id="mobile-menu-button" class="md:hidden">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </nav>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-3">
+             <a href="#" class="block py-2 text-gray-600 hover:text-orange-500 nav-link" data-page="home">首页</a>
+             <a href="#" class="block py-2 text-gray-600 hover:text-orange-500 nav-link" data-page="browse">领养中心</a>
+             <a href="#" class="block py-2 text-gray-600 hover:text-orange-500 nav-link" data-page="faq">常见问题</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6">
+        <!-- 页面容器 -->
+        <div id="page-container">
+            <!-- 主页 -->
+            <section id="home" class="page active">
+                <div class="bg-orange-100/50 rounded-2xl p-8 md:p-12 text-center flex flex-col items-center">
+                    <h1 class="text-4xl md:text-5xl font-bold text-orange-800 mb-4">开启一段新的友谊</h1>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">在宠物之家，每个生命都值得被爱。立即寻找那个正在等待你的、独一无二的毛茸茸伙伴。</p>
+                    <button class="bg-orange-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-orange-600 hover:scale-105 transform transition-all duration-300 nav-link" data-page="browse">
+                        立即寻找
+                    </button>
+                </div>
+                <div class="mt-12">
+                    <h2 class="text-2xl font-bold text-center mb-8">明星宠物</h2>
+                    <div id="featured-pets" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- 特色宠物卡片将在这里动态生成 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 领养中心 -->
+            <section id="browse" class="page">
+                <h2 class="text-3xl font-bold mb-6">领养中心</h2>
+                <!-- 筛选器 -->
+                <div class="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-wrap gap-4 items-center">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="filter" class="text-gray-500"></i>
+                        <span class="font-semibold">筛选:</span>
+                    </div>
+                    <select id="filter-species" class="bg-gray-100 border-none rounded-lg px-3 py-2">
+                        <option value="all">所有种类</option>
+                        <option value="猫">猫</option>
+                        <option value="狗">狗</option>
+                    </select>
+                    <select id="filter-age" class="bg-gray-100 border-none rounded-lg px-3 py-2">
+                        <option value="all">所有年龄</option>
+                        <option value="幼年">幼年</option>
+                        <option value="成年">成年</option>
+                        <option value="老年">老年</option>
+                    </select>
+                     <div class="admin-only ml-auto">
+                        <button id="add-pet-btn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 transition-colors flex items-center space-x-2">
+                            <i data-lucide="plus-circle"></i>
+                            <span>添加宠物</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="pet-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- 宠物卡片将在这里动态生成 -->
+                </div>
+            </section>
+
+            <!-- 宠物详情页 -->
+            <section id="pet-detail" class="page">
+                <!-- 详情内容将在这里动态生成 -->
+            </section>
+
+            <!-- 个人中心 -->
+            <section id="profile" class="page">
+                 <div class="user-only">
+                    <h2 class="text-3xl font-bold mb-6">我的个人中心</h2>
+                    <div class="bg-white p-6 rounded-2xl shadow-md">
+                        <div class="flex items-center space-x-6 mb-6">
+                            <img src="https://placehold.co/100x100/f87171/ffffff?text=User" alt="User Avatar" class="w-24 h-24 rounded-full">
+                            <div>
+                                <h3 class="text-2xl font-bold">爱宠人士</h3>
+                                <p class="text-gray-500">UID: 12345678</p>
+                            </div>
+                        </div>
+                        <!-- Tabs -->
+                        <div class="border-b border-gray-200">
+                            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                                <a href="#" class="profile-tab active-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-orange-500 text-orange-600" data-tab="my-pets">我的宠物</a>
+                                <a href="#" class="profile-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="favorites">我的收藏</a>
+                                <a href="#" class="profile-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="history">交易记录</a>
+                            </nav>
+                        </div>
+                        <!-- Tab Content -->
+                        <div id="profile-content" class="mt-6">
+                            <div id="my-pets" class="profile-tab-content">
+                                <p>您还没有领养任何宠物哦，快去<a href="#" class="text-orange-500 hover:underline nav-link" data-page="browse">领养中心</a>看看吧！</p>
+                            </div>
+                            <div id="favorites" class="profile-tab-content hidden">
+                               <p>您还没有收藏任何宠物。</p>
+                            </div>
+                             <div id="history" class="profile-tab-content hidden">
+                                <p>您还没有交易记录。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-only">
+                    <h2 class="text-3xl font-bold mb-6">管理员后台</h2>
+                    <div class="bg-white p-6 rounded-2xl shadow-md">
+                         <div class="border-b border-gray-200">
+                            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                                <a href="#" class="admin-tab active-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-orange-500 text-orange-600" data-tab="manage-pets">宠物管理</a>
+                                <a href="#" class="admin-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="review-apps">审核申请</a>
+                            </nav>
+                        </div>
+                        <div id="admin-content" class="mt-6">
+                            <div id="manage-pets" class="admin-tab-content">
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full bg-white">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="py-3 px-4 text-left">ID</th>
+                                                <th class="py-3 px-4 text-left">名字</th>
+                                                <th class="py-3 px-4 text-left">种类</th>
+                                                <th class="py-3 px-4 text-left">状态</th>
+                                                <th class="py-3 px-4 text-left">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="admin-pet-list">
+                                            <!-- Admin pet list will be rendered here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="review-apps" class="admin-tab-content hidden">
+                                <p>当前没有待审核的领养申请。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section id="faq" class="page">
+                <h2 class="text-3xl font-bold mb-8 text-center">常见问题解答</h2>
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm">
+                        <details class="group">
+                            <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
+                                <span>领养宠物的流程是怎样的？</span>
+                                <span class="transition group-open:rotate-180">
+                                    <i data-lucide="chevron-down"></i>
+                                </span>
+                            </summary>
+                            <p class="text-gray-600 mt-3 group-open:animate-fadeIn">
+                                浏览我们的领养中心，选择心仪的宠物，点击“申请领养”并填写表格。我们的工作人员会审核您的申请，并与您联系后续事宜。
+                            </p>
+                        </details>
+                    </div>
+                     <div class="bg-white p-4 rounded-xl shadow-sm">
+                        <details class="group">
+                            <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
+                                <span>领养需要费用吗？</span>
+                                <span class="transition group-open:rotate-180">
+                                    <i data-lucide="chevron-down"></i>
+                                </span>
+                            </summary>
+                            <p class="text-gray-600 mt-3 group-open:animate-fadeIn">
+                                我们会收取小额的领养费用，主要用于支付宠物的疫苗、绝育和健康检查等开销，以确保它们能够健康地去到新家。
+                            </p>
+                        </details>
+                    </div>
+                     <div class="bg-white p-4 rounded-xl shadow-sm">
+                        <details class="group">
+                            <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
+                                <span>什么是NFT凭证？</span>
+                                <span class="transition group-open:rotate-180">
+                                    <i data-lucide="chevron-down"></i>
+                                </span>
+                            </summary>
+                            <p class="text-gray-600 mt-3 group-open:animate-fadeIn">
+                                NFT凭证是一个独一无二的数字所有权证书，记录了您宠物的关键信息和领养历史。它存储在区块链上，确保信息的透明和不可篡改，是您与爱宠独特联结的永久纪念。
+                            </p>
+                        </details>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- 弹窗/模态框 -->
+    <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div id="modal-content" class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md transform transition-transform duration-300 scale-95">
+           <!-- Modal content will be injected here -->
+        </div>
+    </div>
+
+    <footer class="bg-white mt-12 py-6">
+        <div class="container mx-auto px-6 text-center text-gray-500">
+            <p>&copy; 2024 宠物之家. 保留所有权利.</p>
+            <p class="text-sm">一个充满爱与责任的社区</p>
+        </div>
+    </footer>
+
+    <script>
+    // Use 'DOMContentLoaded' which fires when the initial HTML document has been completely loaded and parsed,
+    // without waiting for stylesheets, images, and subframes to finish loading.
+    // The 'defer' attribute on the lucide script ensures it's ready by this point.
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // --- Handle Loader Animation ---
+        const loader = document.getElementById('loader');
+        // The loader animation is CSS-based. We'll hide it after 2 seconds.
+        setTimeout(() => {
+            if (loader) {
+                loader.style.opacity = '0';
+                loader.style.visibility = 'hidden';
+            }
+        }, 2000); 
+
+        // --- 数据模型 ---
+        const petsData = [
+            { id: 1, name: '汤圆', species: '猫', breed: '英国短毛猫', age: '幼年', gender: '雄性', health: '已免疫, 已驱虫', history: '救助站发现', nft: '0x123...abc', price: 1200, image: 'https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?q=80&w=580&auto=format&fit=crop', featured: true },
+            { id: 2, name: '豆包', species: '狗', breed: '柯基', age: '成年', gender: '雌性', health: '健康状况良好', history: '原主人工作变动', nft: '0x456...def', price: 1500, image: 'https://images.unsplash.com/photo-1546238232-20216dec9f72?q=80&w=580&auto=format&fit=crop', featured: true },
+            { id: 3, name: '奶酪', species: '猫', breed: '布偶猫', age: '幼年', gender: '雌性', health: '已完成首轮疫苗', history: '家庭繁育', nft: '0x789...ghi', price: 3000, image: 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=715&auto=format&fit=crop', featured: true },
+            { id: 4, name: '将军', species: '狗', breed: '柴犬', age: '成年', gender: '雄性', health: '精力充沛', history: '救助站领养', nft: '0xabc...jkl', price: 1800, image: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=774&auto=format&fit=crop', featured: true },
+            { id: 5, name: '奥利奥', species: '狗', breed: '边境牧羊犬', age: '幼年', gender: '雄性', health: '非常聪明, 已驱虫', history: '救助站发现', nft: '0xdef...mno', price: 2000, image: 'https://images.unsplash.com/photo-1568572933382-74d440642117?q=80&w=735&auto=format&fit=crop', featured: false },
+            { id: 6, name: '芝麻', species: '猫', breed: '暹罗猫', age: '成年', gender: '雌性', health: '健康状况良好', history: '原主人过敏', nft: '0xghi...pqr', price: 1600, image: 'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?q=80&w=687&auto=format&fit=crop', featured: false },
+        ];
+
+        // --- 页面&状态管理 ---
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const petGrid = document.getElementById('pet-grid');
+        const featuredPetsContainer = document.getElementById('featured-pets');
+        const petDetailContainer = document.getElementById('pet-detail');
+        const modeToggle = document.getElementById('mode-toggle');
+
+        // --- 切换页面函数 ---
+        function showPage(pageId) {
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            const activePage = document.getElementById(pageId);
+            if (activePage) {
+                activePage.classList.add('active');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        // --- 渲染函数 ---
+        function createPetCard(pet) {
+            return `
+                <div class="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer pet-card" data-id="${pet.id}">
+                    <img class="w-full h-48 object-cover" src="${pet.image}" alt="${pet.name}" onerror="this.onerror=null;this.src='https://placehold.co/400x300/f87171/ffffff?text=Image+Not+Found';">
+                    <div class="p-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-bold">${pet.name}</h3>
+                            <span class="text-xs font-semibold ${pet.species === '猫' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'} px-2 py-1 rounded-full">${pet.species}</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mt-1">${pet.breed}</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-lg font-bold text-orange-500">¥${pet.price}</span>
+                             <button class="favorite-btn p-2 rounded-full hover:bg-red-100" data-id="${pet.id}">
+                                <i data-lucide="heart" class="text-gray-400 hover:text-red-500"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // **FIXED**: Optimized rendering by building a string first and setting innerHTML once.
+        function renderPets(filterSpecies = 'all', filterAge = 'all') {
+            if (!petGrid) return;
+            let filteredPets = petsData;
+
+            if(filterSpecies !== 'all') {
+                filteredPets = filteredPets.filter(p => p.species === filterSpecies);
+            }
+            if(filterAge !== 'all') {
+                filteredPets = filteredPets.filter(p => p.age === filterAge);
+            }
+
+            const htmlContent = filteredPets.map(createPetCard).join('');
+            petGrid.innerHTML = htmlContent;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // **FIXED**: Optimized rendering.
+        function renderFeaturedPets() {
+            if (!featuredPetsContainer) return;
+            const featured = petsData.filter(p => p.featured);
+            const htmlContent = featured.map(createPetCard).join('');
+            featuredPetsContainer.innerHTML = htmlContent;
+            if (window.lucide) lucide.createIcons();
+        }
+        
+        function renderPetDetail(petId) {
+            const pet = petsData.find(p => p.id === parseInt(petId));
+            if (!pet || !petDetailContainer) return;
+
+            petDetailContainer.innerHTML = `
+                <button class="back-to-browse mb-4 flex items-center space-x-2 text-gray-600 hover:text-orange-500">
+                    <i data-lucide="arrow-left-circle"></i>
+                    <span>返回列表</span>
+                </button>
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden md:flex">
+                    <div class="md:w-1/2">
+                        <img class="w-full h-64 md:h-full object-cover" src="${pet.image}" alt="${pet.name}" onerror="this.onerror=null;this.src='https://placehold.co/600x600/f87171/ffffff?text=Image+Not+Found';">
+                    </div>
+                    <div class="p-8 md:w-1/2">
+                        <div class="flex justify-between items-start">
+                             <h2 class="text-4xl font-bold mb-2">${pet.name}</h2>
+                             <span class="text-sm font-semibold ${pet.species === '猫' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'} px-3 py-1 rounded-full">${pet.species}</span>
+                        </div>
+                        <p class="text-gray-500 text-lg mb-4">${pet.breed}</p>
+                        <div class="grid grid-cols-2 gap-4 text-sm mb-6">
+                            <div class="flex items-center space-x-2"><i data-lucide="cake" class="text-orange-500"></i><span>年龄: ${pet.age}</span></div>
+                            <div class="flex items-center space-x-2"><i data-lucide="${pet.gender === '雄性' ? 'mars' : 'venus'}" class="text-orange-500"></i><span>性别: ${pet.gender}</span></div>
+                            <div class="flex items-center space-x-2 col-span-2"><i data-lucide="shield-check" class="text-orange-500"></i><span>健康: ${pet.health}</span></div>
+                            <div class="flex items-center space-x-2 col-span-2"><i data-lucide="file-text" class="text-orange-500"></i><span>历史: ${pet.history}</span></div>
+                            <div class="flex items-center space-x-2 col-span-2"><i data-lucide="gem" class="text-orange-500"></i><span class="truncate">NFT凭证: ${pet.nft}</span></div>
+                        </div>
+                         <div class="border-t pt-6">
+                            <p class="text-3xl font-bold text-orange-600 mb-4">¥${pet.price}</p>
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <button class="w-full bg-orange-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:bg-orange-600 hover:scale-105 transform transition-all duration-300">申请领养</button>
+                                <button class="w-full bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-xl hover:bg-gray-300 transition-colors">加入购物车</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showPage('pet-detail');
+            if (window.lucide) lucide.createIcons();
+            
+            document.querySelector('.back-to-browse')?.addEventListener('click', () => showPage('browse'));
+        }
+        
+        // **FIXED**: Optimized rendering.
+        function renderAdminPetList() {
+            const listContainer = document.getElementById('admin-pet-list');
+            if(!listContainer) return;
+            const htmlContent = petsData.map(pet => `
+                <tr class="border-b">
+                    <td class="py-3 px-4">${pet.id}</td>
+                    <td class="py-3 px-4">${pet.name}</td>
+                    <td class="py-3 px-4">${pet.species}</td>
+                    <td class="py-3 px-4"><span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">在售</span></td>
+                    <td class="py-3 px-4 flex space-x-2">
+                        <button class="text-blue-500 hover:text-blue-700"><i data-lucide="edit"></i></button>
+                        <button class="text-red-500 hover:text-red-700"><i data-lucide="trash-2"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            listContainer.innerHTML = htmlContent;
+            if (window.lucide) lucide.createIcons();
+        }
+        
+        // --- 弹窗/模态框函数 ---
+        const modalContainer = document.getElementById('modal-container');
+        const modalContent = document.getElementById('modal-content');
+
+        function showModal(content) {
+            if (!modalContainer || !modalContent) return;
+            modalContent.innerHTML = content;
+            modalContainer.classList.remove('hidden');
+            modalContainer.classList.add('flex');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95');
+            }, 10);
+            
+             modalContent.querySelector('.close-modal-btn')?.addEventListener('click', closeModal);
+        }
+
+        function closeModal() {
+            if (!modalContainer || !modalContent) return;
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modalContainer.classList.add('hidden');
+                modalContainer.classList.remove('flex');
+                modalContent.innerHTML = '';
+            }, 300);
+        }
+        
+        function showAddPetModal() {
+            const modalHTML = `
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="text-xl font-bold">添加新宠物</h3>
+                  <button class="close-modal-btn p-1 rounded-full hover:bg-gray-200"><i data-lucide="x"></i></button>
+                </div>
+                <form id="add-pet-form" class="space-y-4">
+                  <input type="text" placeholder="名字" class="w-full p-2 border rounded-lg">
+                  <input type="text" placeholder="品种" class="w-full p-2 border rounded-lg">
+                  <select class="w-full p-2 border rounded-lg">
+                    <option>猫</option><option>狗</option>
+                  </select>
+                  <input type="number" placeholder="价格" class="w-full p-2 border rounded-lg">
+                  <input type="text" placeholder="图片URL" class="w-full p-2 border rounded-lg">
+                  <button type="submit" class="w-full bg-green-500 text-white font-bold py-2 px-4 rounded-xl hover:bg-green-600">确认添加</button>
+                </form>
+            `;
+            showModal(modalHTML);
+            if (window.lucide) lucide.createIcons();
+            
+            document.getElementById('add-pet-form')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                console.log('Form submitted');
+                closeModal();
+            });
+        }
+        
+        // --- 事件监听 ---
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = link.getAttribute('data-page');
+                if (pageId) showPage(pageId);
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (mobileMenu && mobileMenu.classList.contains('block')) {
+                    mobileMenu.classList.remove('block');
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+
+        document.getElementById('pet-grid')?.addEventListener('click', function(e) {
+            const card = e.target.closest('.pet-card');
+            const favoriteBtn = e.target.closest('.favorite-btn');
+            
+            if (favoriteBtn) {
+                e.stopPropagation();
+                const icon = favoriteBtn.querySelector('i');
+                if(icon) {
+                    icon.classList.toggle('text-red-500');
+                    icon.classList.toggle('fill-current');
+                    icon.classList.toggle('text-gray-400');
+                }
+                console.log(`Toggled favorite for pet ID: ${favoriteBtn.dataset.id}`);
+            } else if (card) {
+                const petId = card.getAttribute('data-id');
+                renderPetDetail(petId);
+            }
+        });
+        
+        document.getElementById('featured-pets')?.addEventListener('click', function(e) {
+             const card = e.target.closest('.pet-card');
+             if (card) {
+                const petId = card.getAttribute('data-id');
+                renderPetDetail(petId);
+            }
+        });
+
+        document.getElementById('filter-species')?.addEventListener('change', (e) => renderPets(e.target.value, document.getElementById('filter-age').value));
+        document.getElementById('filter-age')?.addEventListener('change', (e) => renderPets(document.getElementById('filter-species').value, e.target.value));
+
+        modeToggle?.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                document.body.classList.add('admin-mode');
+                renderAdminPetList();
+            } else {
+                document.body.classList.remove('admin-mode');
+            }
+            showPage('profile');
+        });
+
+        document.querySelector('#profile')?.addEventListener('click', e => {
+            const target = e.target;
+            if (target.matches('.profile-tab')) {
+                e.preventDefault();
+                document.querySelectorAll('.profile-tab').forEach(tab => tab.classList.remove('active-tab', 'border-orange-500', 'text-orange-600'));
+                target.classList.add('active-tab', 'border-orange-500', 'text-orange-600');
+                document.querySelectorAll('.profile-tab-content').forEach(content => content.classList.add('hidden'));
+                document.getElementById(target.dataset.tab)?.classList.remove('hidden');
+            }
+             if (target.matches('.admin-tab')) {
+                e.preventDefault();
+                document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active-tab', 'border-orange-500', 'text-orange-600'));
+                target.classList.add('active-tab', 'border-orange-500', 'text-orange-600');
+                document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.add('hidden'));
+                document.getElementById(target.dataset.tab)?.classList.remove('hidden');
+            }
+        });
+        
+        document.getElementById('add-pet-btn')?.addEventListener('click', showAddPetModal);
+        
+        modalContainer?.addEventListener('click', e => {
+            if(e.target === modalContainer) closeModal();
+        });
+        
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton?.addEventListener('click', () => {
+             mobileMenu?.classList.toggle('hidden');
+             mobileMenu?.classList.toggle('block');
+        });
+
+        // --- 初始化 ---
+        // Initial rendering of page content
+        renderPets();
+        renderFeaturedPets();
+        // Finally, create all icons present in the DOM.
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    });
+    </script>
+</body>
+</html>

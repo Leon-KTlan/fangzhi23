@@ -1,0 +1,5 @@
+区块链示例网站
+https://andersbrownworth.com/blockchain/hash
+
+区块链基本原理
+https://liaoxuefeng.com/books/blockchain/bitcoin/basic/index.html
