@@ -1,0 +1,61 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A5745D91-9582-4B2A-B9B5-47345A1CE19A}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2.vcxproj|C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A5745D91-9582-4B2A-B9B5-47345A1CE19A}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2.vcxproj|solutionrelative:2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A5745D91-9582-4B2A-B9B5-47345A1CE19A}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2.vcxproj|C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\cursor1.cur||{177559E0-D141-11D0-92DF-00A0C9138C45}",
+      "RelativeMoniker": "D:0:0:{A5745D91-9582-4B2A-B9B5-47345A1CE19A}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2.vcxproj|solutionrelative:2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\cursor1.cur||{177559E0-D141-11D0-92DF-00A0C9138C45}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 15,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2.cpp",
+              "DocumentMoniker": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2.cpp",
+              "RelativeDocumentMoniker": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2.cpp",
+              "ToolTip": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2.cpp",
+              "RelativeToolTip": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2.cpp",
+              "ViewState": "AgIAAPEAAAAAAAAAAAAswBUBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-03-26T00:57:14.278Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "cursor1.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "DocumentMoniker": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\cursor1.cur",
+              "RelativeDocumentMoniker": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\cursor1.cur",
+              "ToolTip": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\cursor1.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "RelativeToolTip": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@2\\cursor1.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000812|",
+              "WhenOpened": "2025-03-26T00:58:06.86Z",
+              "EditorCaption": " - Cursor [32x32, 1 \u4F4D, BMP]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

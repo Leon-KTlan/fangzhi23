@@ -1,0 +1,278 @@
+﻿#include "framework.h"
+#include "2023327100056_李凯涛_Win32Application_5@@2.h"
+
+#define MAX_LOADSTRING 100
+#define TIMER_ID 1          // 定时器ID
+#define STRETCH_SPEED 10    // 拉伸速度（毫秒）
+
+// 全局变量:
+HINSTANCE hInst;                                // 当前实例
+WCHAR szTitle[MAX_LOADSTRING];                  // 标题栏文本
+WCHAR szWindowClass[MAX_LOADSTRING];            // 主窗口类名
+
+// 添加全局变量用于鼠标交互
+POINT startPoint;       // 鼠标按下时的起始点
+POINT endPoint;         // 鼠标移动时的终点
+BOOL isDrawing = FALSE; // 是否正在绘制矩形
+BOOL isStretching = FALSE; // 是否正在拉伸矩形
+RECT currentRect;       // 当前矩形区域（用于拉伸）
+RECT targetRect;        // 目标矩形（整个窗口）
+
+// 此代码模块中包含的函数的前向声明:
+ATOM                MyRegisterClass(HINSTANCE hInstance);
+BOOL                InitInstance(HINSTANCE, int);
+LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPWSTR    lpCmdLine,
+    _In_ int       nCmdShow)
+{
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
+
+    // 初始化全局字符串
+    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    LoadStringW(hInstance, IDC_MY2023327100056WIN32APPLICATION52, szWindowClass, MAX_LOADSTRING);
+    MyRegisterClass(hInstance);
+
+    // 执行应用程序初始化:
+    if (!InitInstance(hInstance, nCmdShow))
+    {
+        return FALSE;
+    }
+
+    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MY2023327100056WIN32APPLICATION52));
+
+    MSG msg;
+
+    // 主消息循环:
+    while (GetMessage(&msg, nullptr, 0, 0))
+    {
+        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+
+    return (int)msg.wParam;
+}
+
+ATOM MyRegisterClass(HINSTANCE hInstance)
+{
+    WNDCLASSEXW wcex;
+
+    wcex.cbSize = sizeof(WNDCLASSEX);
+
+    wcex.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS; // 支持双击消息
+    wcex.lpfnWndProc = WndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MY2023327100056WIN32APPLICATION52));
+    // 从外部文件加载自定义光标（红色光标，黄色背景）
+    wcex.hCursor = (HCURSOR)LoadImage(
+        NULL,                           // 不需要实例句柄
+        L"C:\\Users\\30868\\Desktop\\tao.cur",  // 光标文件路径
+        IMAGE_CURSOR,                   // 指定加载的是光标
+        0, 0,                           // 使用默认大小
+        LR_LOADFROMFILE | LR_DEFAULTSIZE // 从文件加载，使用默认尺寸
+    );
+
+    // 如果加载失败，回退到默认箭头光标
+    if (wcex.hCursor == NULL)
+    {
+        wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    }
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_MY2023327100056WIN32APPLICATION52);
+    wcex.lpszClassName = szWindowClass;
+    wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+
+    return RegisterClassExW(&wcex);
+}
+
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+{
+    hInst = hInstance;
+
+    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+
+    if (!hWnd)
+    {
+        return FALSE;
+    }
+
+    ShowWindow(hWnd, nCmdShow);
+    UpdateWindow(hWnd);
+
+    return TRUE;
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch (message)
+    {
+    case WM_LBUTTONDOWN: // 鼠标左键按下
+    {
+        startPoint.x = LOWORD(lParam);
+        startPoint.y = HIWORD(lParam);
+        endPoint = startPoint;
+        isDrawing = TRUE;
+        SetCursor(LoadCursor(nullptr, IDC_CROSS)); // 设置十字型光标
+        SetCapture(hWnd);                          // 捕获鼠标
+        break;
+    }
+    case WM_MOUSEMOVE: // 鼠标移动
+    {
+        if (isDrawing)
+        {
+            endPoint.x = LOWORD(lParam);
+            endPoint.y = HIWORD(lParam);
+            InvalidateRect(hWnd, nullptr, TRUE);       // 重绘窗口
+            SetCursor(LoadCursor(nullptr, IDC_CROSS)); // 保持十字型光标
+        }
+        break;
+    }
+    case WM_LBUTTONUP: // 鼠标左键抬起
+    {
+        if (isDrawing)
+        {
+            isDrawing = FALSE;
+            ReleaseCapture();            // 释放鼠标捕获
+            isStretching = TRUE;
+            SetCursor(LoadCursor(nullptr, IDC_WAIT)); // 设置沙漏型光标
+
+            // 获取整个窗口的客户区作为目标矩形
+            GetClientRect(hWnd, &targetRect);
+
+            // 初始化当前矩形为绘制的矩形
+            currentRect.left = min(startPoint.x, endPoint.x);
+            currentRect.top = min(startPoint.y, endPoint.y);
+            currentRect.right = max(startPoint.x, endPoint.x);
+            currentRect.bottom = max(startPoint.y, endPoint.y);
+
+            // 启动定时器以实现拉伸动画
+            SetTimer(hWnd, TIMER_ID, STRETCH_SPEED, nullptr);
+        }
+        break;
+    }
+    case WM_TIMER: // 定时器消息处理拉伸动画
+    {
+        if (wParam == TIMER_ID && isStretching)
+        {
+            // 逐步扩大 currentRect 到 targetRect
+            if (currentRect.left > targetRect.left)
+                currentRect.left = max(currentRect.left - 10, targetRect.left);
+            if (currentRect.top > targetRect.top)
+                currentRect.top = max(currentRect.top - 10, targetRect.top);
+            if (currentRect.right < targetRect.right)
+                currentRect.right = min(currentRect.right + 10, targetRect.right);
+            if (currentRect.bottom < targetRect.bottom)
+                currentRect.bottom = min(currentRect.bottom + 10, targetRect.bottom);
+
+            InvalidateRect(hWnd, nullptr, TRUE); // 重绘窗口
+
+            // 如果矩形已覆盖整个窗口，停止拉伸
+            if (currentRect.left <= targetRect.left &&
+                currentRect.top <= targetRect.top &&
+                currentRect.right >= targetRect.right &&
+                currentRect.bottom >= targetRect.bottom)
+            {
+                KillTimer(hWnd, TIMER_ID);
+                isStretching = FALSE;
+                SetCursor(LoadCursor(nullptr, IDC_ARROW)); // 恢复默认光标
+            }
+        }
+        break;
+    }
+    case WM_LBUTTONDBLCLK: // 鼠标左键双击
+    {
+        isDrawing = FALSE;
+        isStretching = FALSE;
+        KillTimer(hWnd, TIMER_ID);          // 停止定时器
+        InvalidateRect(hWnd, nullptr, TRUE); // 重绘窗口以恢复初始状态
+        break;
+    }
+    case WM_COMMAND:
+    {
+        int wmId = LOWORD(wParam);
+        switch (wmId)
+        {
+        case IDM_ABOUT:
+            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+            break;
+        case IDM_EXIT:
+            DestroyWindow(hWnd);
+            break;
+        default:
+            return DefWindowProc(hWnd, message, wParam, lParam);
+        }
+        break;
+    }
+    case WM_PAINT: // 绘制窗口内容
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+
+        if (isDrawing || isStretching)
+        {
+            HBRUSH hBrush = CreateSolidBrush(RGB(128, 128, 128)); // 灰色画刷
+            RECT rect;
+
+            if (isDrawing)
+            {
+                rect.left = min(startPoint.x, endPoint.x);
+                rect.top = min(startPoint.y, endPoint.y);
+                rect.right = max(startPoint.x, endPoint.x);
+                rect.bottom = max(startPoint.y, endPoint.y);
+            }
+            else if (isStretching)
+            {
+                rect = currentRect; // 使用当前拉伸的矩形
+            }
+
+            FillRect(hdc, &rect, hBrush);
+            DeleteObject(hBrush);
+        }
+        else
+        {
+            // 恢复初始状态：绘制默认背景
+            RECT clientRect;
+            GetClientRect(hWnd, &clientRect);
+            FillRect(hdc, &clientRect, (HBRUSH)(COLOR_WINDOW + 1));
+        }
+
+        EndPaint(hWnd, &ps);
+        break;
+    }
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    switch (message)
+    {
+    case WM_INITDIALOG:
+        return (INT_PTR)TRUE;
+
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+        {
+            EndDialog(hDlg, LOWORD(wParam));
+            return (INT_PTR)TRUE;
+        }
+        break;
+    }
+    return (INT_PTR)FALSE;
+}
