@@ -1,0 +1,9 @@
+io:1 d:1 x:177 y:50 Beat:456
+io:1 d:1 x:98 y:67 Beat:332
+io:1 d:1 x:47 y:23 Beat:474
+io:1 d:0 x:152 y:27 Beat:835
+io:-1 d:1 x:98 y:67 Beat:1168
+io:-1 d:1 x:47 y:23 Beat:1310
+io:-1 d:0 x:152 y:27 Beat:1671
+io:1 d:0 x:92 y:14 Beat:1885
+io:1 d:0 x:154 y:24 Beat:2243
