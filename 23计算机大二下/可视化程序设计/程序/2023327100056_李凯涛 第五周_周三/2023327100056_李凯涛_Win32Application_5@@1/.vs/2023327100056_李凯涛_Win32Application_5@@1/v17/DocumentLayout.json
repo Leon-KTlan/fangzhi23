@@ -1,0 +1,125 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{3B5F461E-F6B5-4523-A3C9-83B84EC1080E}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.vcxproj|C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{3B5F461E-F6B5-4523-A3C9-83B84EC1080E}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.vcxproj|solutionrelative:2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppCommon.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3B5F461E-F6B5-4523-A3C9-83B84EC1080E}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.vcxproj|C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cur||{177559E0-D141-11D0-92DF-00A0C9138C45}",
+      "RelativeMoniker": "D:0:0:{3B5F461E-F6B5-4523-A3C9-83B84EC1080E}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.vcxproj|solutionrelative:2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cur||{177559E0-D141-11D0-92DF-00A0C9138C45}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3B5F461E-F6B5-4523-A3C9-83B84EC1080E}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.vcxproj|C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY.cur||{177559E0-D141-11D0-92DF-00A0C9138C45}",
+      "RelativeMoniker": "D:0:0:{3B5F461E-F6B5-4523-A3C9-83B84EC1080E}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.vcxproj|solutionrelative:2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY.cur||{177559E0-D141-11D0-92DF-00A0C9138C45}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3B5F461E-F6B5-4523-A3C9-83B84EC1080E}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.vcxproj|C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER.cur||{177559E0-D141-11D0-92DF-00A0C9138C45}",
+      "RelativeMoniker": "D:0:0:{3B5F461E-F6B5-4523-A3C9-83B84EC1080E}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.vcxproj|solutionrelative:2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER.cur||{177559E0-D141-11D0-92DF-00A0C9138C45}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3B5F461E-F6B5-4523-A3C9-83B84EC1080E}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.vcxproj|C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY1.cur||{177559E0-D141-11D0-92DF-00A0C9138C45}",
+      "RelativeMoniker": "D:0:0:{3B5F461E-F6B5-4523-A3C9-83B84EC1080E}|2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.vcxproj|solutionrelative:2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY1.cur||{177559E0-D141-11D0-92DF-00A0C9138C45}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 15,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Microsoft.CppCommon.targets",
+              "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppCommon.targets",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppCommon.targets",
+              "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppCommon.targets",
+              "RelativeToolTip": "..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppCommon.targets",
+              "ViewState": "AgIAANYHAAAAAAAAAAAuwOoHAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2025-03-26T00:50:35.584Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "DocumentMoniker": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cur",
+              "RelativeDocumentMoniker": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cur",
+              "ToolTip": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "RelativeToolTip": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000812|",
+              "WhenOpened": "2025-03-26T00:42:48.913Z",
+              "EditorCaption": " - Cursor [32x32, 1 \u4F4D, BMP]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "POINTER_COPY1.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "DocumentMoniker": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY1.cur",
+              "RelativeDocumentMoniker": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY1.cur",
+              "ToolTip": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY1.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "RelativeToolTip": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY1.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000812|",
+              "WhenOpened": "2025-03-26T00:28:13.222Z",
+              "EditorCaption": " - Cursor [32x32, 1 \u4F4D, BMP]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "POINTER.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "DocumentMoniker": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER.cur",
+              "RelativeDocumentMoniker": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER.cur",
+              "ToolTip": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "RelativeToolTip": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000812|",
+              "WhenOpened": "2025-03-26T00:28:01.235Z",
+              "EditorCaption": " - Cursor [32x32, 1 \u4F4D, BMP]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "POINTER_COPY.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "DocumentMoniker": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY.cur",
+              "RelativeDocumentMoniker": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY.cur",
+              "ToolTip": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "RelativeToolTip": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\POINTER_COPY.cur - Cursor [32x32, 1 \u4F4D, BMP]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000812|",
+              "WhenOpened": "2025-03-26T00:27:51.334Z",
+              "EditorCaption": " - Cursor [32x32, 1 \u4F4D, BMP]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cpp",
+              "DocumentMoniker": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cpp",
+              "RelativeDocumentMoniker": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cpp",
+              "ToolTip": "C:\\Users\\30868\\Desktop\\2025\u5927\u4E8C\u8BA1\u7B97\u673A\u7B2C\u4E8C\u5B66\u671F\\\u53EF\u89C6\u5316\u7A0B\u5E8F\u8BBE\u8BA1\\\u7A0B\u5E8F\\2023327100056_\u674E\u51EF\u6D9B \u7B2C\u4E94\u5468_\u5468\u4E09\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cpp",
+              "RelativeToolTip": "2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1\\2023327100056_\u674E\u51EF\u6D9B_Win32Application_5@@1.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-03-26T00:19:16.87Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
