@@ -1,0 +1,306 @@
+﻿// main.cpp : 定义应用程序的入口点。
+//
+
+#include "framework.h"
+#include "resource.h"
+
+#define MAX_LOADSTRING 100
+
+HINSTANCE hInst;
+WCHAR szTitle[MAX_LOADSTRING];
+WCHAR szWindowClass[MAX_LOADSTRING];
+
+ATOM MyRegisterClass(HINSTANCE hInstance);
+BOOL InitInstance(HINSTANCE, int);
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
+static bool g_bDrawGraph = false;
+
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPWSTR lpCmdLine,
+    _In_ int nCmdShow)
+{
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
+
+    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    LoadStringW(hInstance, IDC_MY2023327100056, szWindowClass, MAX_LOADSTRING);
+    MyRegisterClass(hInstance);
+
+    if (!InitInstance(hInstance, nCmdShow))
+    {
+        return FALSE;
+    }
+
+    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MY2023327100056));
+
+    MSG msg;
+    while (GetMessage(&msg, nullptr, 0, 0))
+    {
+        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+
+    return (int)msg.wParam;
+}
+
+ATOM MyRegisterClass(HINSTANCE hInstance)
+{
+    WNDCLASSEXW wcex = { sizeof(WNDCLASSEX) };
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = WndProc;
+    wcex.hInstance = hInstance;
+    wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MY2023327100056));
+    wcex.hCursor = LoadCursorFromFile(L"C:\\Users\\30868\Desktop\\2025大二计算机第二学期\\可视化程序设计\\程序\\2023327100056李凯涛_第七周周三\\2023327100056_李凯涛_第七周_星期二_实验贰_课堂录屏\\kai.cur");
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName = nullptr;
+    wcex.lpszClassName = szWindowClass;
+    wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+
+    return RegisterClassExW(&wcex);
+}
+
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+{
+    hInst = hInstance;
+
+    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+
+    if (!hWnd)
+    {
+        return FALSE;
+    }
+
+    HMENU hMenu = CreateMenu();
+    HMENU hFileMenu = CreatePopupMenu();
+    AppendMenuW(hFileMenu, MF_STRING, 1001, L"打开");
+    AppendMenuW(hFileMenu, MF_STRING, 1002, L"保存");
+    AppendMenuW(hFileMenu, MF_STRING, 1003, L"画图");
+    AppendMenuW(hFileMenu, MF_STRING, 1004, L"退出");
+    AppendMenuW(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"文件");
+
+    HMENU hCalcMenu = CreatePopupMenu();
+    AppendMenuW(hCalcMenu, MF_STRING, 2001, L"总和");
+    AppendMenuW(hCalcMenu, MF_STRING, 2002, L"方差");
+    AppendMenuW(hCalcMenu, MF_STRING, 2003, L"均方根");
+    AppendMenuW(hMenu, MF_POPUP, (UINT_PTR)hCalcMenu, L"计算");
+
+    HMENU hHelpMenu = CreatePopupMenu();
+    AppendMenuW(hHelpMenu, MF_STRING, 3001, L"计算总和帮助");
+    AppendMenuW(hHelpMenu, MF_STRING, 3002, L"计算方差帮助");
+    AppendMenuW(hHelpMenu, MF_STRING, 3003, L"计算均方根帮助");
+    AppendMenuW(hHelpMenu, MF_STRING, IDM_ABOUT, L"关于");
+    AppendMenuW(hMenu, MF_POPUP, (UINT_PTR)hHelpMenu, L"帮助");
+
+    SetMenu(hWnd, hMenu);
+
+    ShowWindow(hWnd, nCmdShow);
+    UpdateWindow(hWnd);
+
+    return TRUE;
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch (message)
+    {
+    case WM_RBUTTONDOWN:
+    {
+        POINT pt;
+        pt.x = LOWORD(lParam);
+        pt.y = HIWORD(lParam);
+        ClientToScreen(hWnd, &pt);
+        HMENU hPopup = CreatePopupMenu();
+        AppendMenuW(hPopup, MF_STRING, 4001, L"删除计算总和");
+        AppendMenuW(hPopup, MF_STRING, 4002, L"添加计算平均值");
+        AppendMenuW(hPopup, MF_STRING, 4003, L"修改计算均方差");
+        TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, 0, hWnd, NULL);
+        DestroyMenu(hPopup);
+    }
+    break;
+
+    case WM_COMMAND:
+    {
+        int wmId = LOWORD(wParam);
+        switch (wmId)
+        {
+        case 1001:
+            MessageBoxW(hWnd, L"打开菜单项被点击", L"信息", MB_OK);
+            break;
+        case 1002:
+            MessageBoxW(hWnd, L"保存菜单项被点击", L"信息", MB_OK);
+            break;
+        case 1003:
+            g_bDrawGraph = true;
+            InvalidateRect(hWnd, NULL, TRUE);
+            UpdateWindow(hWnd);
+            break;
+        case 1004:
+            DestroyWindow(hWnd);
+            break;
+        case 2001:
+            MessageBoxW(hWnd, L"总和菜单项被点击", L"信息", MB_OK);
+            break;
+        case 2002:
+            MessageBoxW(hWnd, L"方差菜单项被点击", L"信息", MB_OK);
+            break;
+        case 2003:
+            MessageBoxW(hWnd, L"均方根菜单项被点击", L"信息", MB_OK);
+            break;
+        case 2004:
+            MessageBoxW(hWnd, L"计算平均值菜单项被点击", L"信息", MB_OK);
+            break;
+        case 2005:
+            MessageBoxW(hWnd, L"线性拟合菜单项被点击", L"信息", MB_OK);
+            break;
+        case 3001:
+            MessageBoxW(hWnd, L"计算总和帮助菜单项被点击", L"信息", MB_OK);
+            break;
+        case 3002:
+            MessageBoxW(hWnd, L"计算方差帮助菜单项被点击", L"信息", MB_OK);
+            break;
+        case 3003:
+            MessageBoxW(hWnd, L"计算均方根帮助菜单项被点击", L"信息", MB_OK);
+            break;
+        case IDM_ABOUT:
+            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+            break;
+        case 4001:
+        {
+            HMENU hMenu = GetMenu(hWnd);
+            if (hMenu)
+            {
+                HMENU hCalcMenu = GetSubMenu(hMenu, 1);
+                if (hCalcMenu)
+                {
+                    DeleteMenu(hCalcMenu, 2001, MF_BYCOMMAND);
+                    DrawMenuBar(hWnd);
+                }
+            }
+        }
+        break;
+        case 4002:
+        {
+            HMENU hMenu = GetMenu(hWnd);
+            if (hMenu)
+            {
+                HMENU hCalcMenu = GetSubMenu(hMenu, 1);
+                if (hCalcMenu)
+                {
+                    AppendMenuW(hCalcMenu, MF_STRING, 2004, L"计算平均值");
+                    DrawMenuBar(hWnd);
+                }
+            }
+        }
+        break;
+        case 4003:
+        {
+            HMENU hMenu = GetMenu(hWnd);
+            if (hMenu)
+            {
+                HMENU hCalcMenu = GetSubMenu(hMenu, 1);
+                if (hCalcMenu)
+                {
+                    ModifyMenuW(hCalcMenu, 2002, MF_BYCOMMAND | MF_STRING, 2005, L"线性拟合");
+                    DrawMenuBar(hWnd);
+                }
+            }
+        }
+        break;
+        default:
+            return DefWindowProc(hWnd, message, wParam, lParam);
+        }
+    }
+    break;
+
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+        if (g_bDrawGraph) {
+            // 创建自定义绘图工具
+            HBRUSH hRedHatchBrush = CreateHatchBrush(HS_CROSS, RGB(255, 0, 0));
+            HBRUSH hRedSolidBrush = CreateSolidBrush(RGB(255, 0, 0));  // 红色斜交叉线填充
+            HPEN hBlackPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));                  // 黑色轮廓笔
+            HPEN hGreenGlowPen = CreatePen(PS_SOLID, 2, RGB(0, 255, 127));          // 荧光绿边框笔（使用春绿色）
+
+            //---- 修改原始图形填充和轮廓 ----
+            // 1. 绘制上方圆角矩形（网状填充+黑边）
+            SelectObject(hdc, hRedHatchBrush);  // 载入红色网格填充
+            SelectObject(hdc, hBlackPen);       // 载入黑色轮廓笔
+            // 1. 上方圆角矩形（高度25）
+            RoundRect(hdc, 250, 200, 300, 225, 20, 20);  // y: 200~225
+
+            // 2. 中间饼图（高度100，紧接上方矩形）
+            Pie(hdc, 250, 225, 300, 325, 260, 225, 290, 225);  // y: 225~325
+
+            // 3. 下方矩形（高度55，紧接饼图）
+            Rectangle(hdc, 250, 325, 300, 380);  // y: 325~380
+
+            // 1. 定义荧光绿虚线画笔
+            HPEN hGreenDashPen = CreatePen(PS_DOT, 1, RGB(0, 255, 127));
+
+            // 2. 计算饼图中心坐标
+            int pieCenterX = (250 + 300) / 2;  // x = (left + right) / 2
+            int pieCenterY = (225 + 325) / 2;  // y = (top + bottom) / 2
+
+            // 3. 绘制十字虚线（超出图形范围）
+            HPEN hOldPen = (HPEN)SelectObject(hdc, hGreenDashPen);
+            MoveToEx(hdc, 200, pieCenterY, NULL);  // 水平线左端
+            LineTo(hdc, 350, pieCenterY);          // 水平线右端
+            MoveToEx(hdc, pieCenterX, 180, NULL);  // 垂直线上端
+            LineTo(hdc, pieCenterX, 400);          // 垂直线下端
+            SelectObject(hdc, hOldPen);
+
+            //---- 新增右侧荧光绿边框方块 ----
+            SelectObject(hdc, hRedSolidBrush);
+            SelectObject(hdc, hGreenGlowPen);                 // 荧光绿边框
+            Rectangle(hdc, 350, 200, 500, 375);               // 右侧方块坐标（X从310开始）
+
+            // 恢复默认工具（重要！防止资源泄漏）
+
+
+            // 最后释放自定义GDI对象
+            DeleteObject(hRedHatchBrush);
+            DeleteObject(hRedSolidBrush);
+            DeleteObject(hBlackPen);
+            DeleteObject(hGreenGlowPen);
+            DeleteObject(hGreenDashPen);
+        }
+        EndPaint(hWnd, &ps);
+    }
+    break;
+
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    switch (message)
+    {
+    case WM_INITDIALOG:
+        return (INT_PTR)TRUE;
+
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+        {
+            EndDialog(hDlg, LOWORD(wParam));
+            return (INT_PTR)TRUE;
+        }
+        break;
+    }
+    return (INT_PTR)FALSE;
+}
