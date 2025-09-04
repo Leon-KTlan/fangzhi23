@@ -1,0 +1,171 @@
+yum remove iaas-xiandian -y
+rm -rf /opt/iaas/*
+
+eno16777728
+eno33554952
+r代表controller
+e代表compute
+
+任务：以小组为单位构建一个openstack，并能够验证你的部署，从而实现IaaS
+
+CentOS-7-x86_64-DVD-1511.iso
+XianDian-IaaS-v2.2.iso
+cirros-0.3.4-x86_64-disk.img
+
+修改ip
+r:
+cd /etc/sysconfig/network-scripts/
+ip a
+ls
+vi ifcfg-ens32
+修改配置文件
+service network restart
+
+e:
+重复上述操作
+修改配置文件后的操作改为systemctl restart network
+
+
+
+进入xshell，连接两台主机
+r:
+hostnamectl set-hostname controller //修改主机名
+bash
+
+vi /etc/hosts
+配置
+192.168.100.10 controller
+192.168.100.20 compute
+
+e:
+hostnamectl set-hostname compute
+bash
+
+vi /etc/hosts
+配置
+192.168.100.10 controller
+192.168.100.20 compute
+
+
+
+上传镜像到r，并挂载r
+
+配置yum源
+r：
+cd /opt/
+mkdir iaas
+mkdir centos
+mv XianDian-IaaS-v2.2.iso x.iso
+ls
+
+vi /etc/fstab
+cd /etc/yum.repos.d/
+ls
+mkdir beifen //名为“beifen”的备份文件夹
+mv C* beifen/
+ls
+
+vi local.repo //创建新的yum源
+配置
+[centos]
+name=centos
+enabled=1
+gpgcheck=0
+baseurl=file:///opt/centos
+[iaas]
+name=iaas
+enabled=1
+gpgcheck=0
+baseurl=file:///opt/iaas/iaas-repo
+
+yum clean all //清空缓存
+yum makecache
+
+配置ftp服务
+r:
+yum install vsftpd -y
+vi /etc/vsftpd/vsftpd.conf
+systemctl restart vsftpd
+systemctl enable vsftpd
+curl ftp://controller
+
+systemctl stop firewalld //关闭防火墙
+systemctl disable firewalld
+setenforce 0 //关闭安全策略
+
+vi /etc/selinux/config
+
+e:
+scp controller:/etc/yum.repos.d/local.repo /etc/yum.repos.d/
+
+cd /etc/yum.repos.d/
+
+mkdir beifen //名为“beifen”的备份文件夹
+mv C* beifen/
+
+vi local.repo
+
+yum clean all //清空缓存
+yum makecache
+
+yum repolist
+
+第三阶段
+r:
+yum install iaas-xiandian -y
+cat /etc/xiandian/openrc.sh
+sed -i "s/PASS=/PASS=000000/g" /etc/xiandian/openrc.sh
+sed -i "s/#/ /g" /etc/xiandian/openrc.sh
+sed -i "s/  /#/" /etc/xiandian/openrc.sh
+cat /etc/xiandian/openrc.sh
+
+vi /etc/xiandian/openrc.sh
+
+cd /usr/local/bin/
+ls
+vi iaas-install-neutron-controller-gre.sh
+vi iaas-pre-host.sh
+iaas-pre-host.sh
+
+reboot //重启
+重新连接
+
+e:
+yum install iaas-xiandian -y
+scp controller:/etc/xiandian/openrc.sh /etc/xiandian/openrc.sh 
+iaas-pre-host.sh
+reboot
+
+ 安装组件
+r:
+cd /usr/local/bin/
+ls
+
+vi allinone
+配置
+iaas-install-mysql.sh
+iaas-install-keystone.sh
+iaas-install-glance.sh
+iaas-install-nova-controller.sh
+iaas-install-neutron-controller.sh
+iaas-install-neutron-controller-gre.sh
+iaas-install-dashboard.sh
+
+bash allinone
+
+e:
+cd /usr/local/bin/
+vi allinone
+配置
+iaas-install-nova-compute.sh
+iaas-install-neutron-compute.sh
+iaas-install-neutron-compute-gre.sh
+
+bash allinone
+
+访问网址
+192.168.100.10/dashboard
+
+ip netns list /查看 namespace 列表
+
+ip netns exec qrouter-a60292d2-fdd7-442c-aecd-107e6c63b205 ping 10.0.0.3 /进入对应的 namespace 并 ping
