@@ -1,0 +1,274 @@
+const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron');
+const fs = require('fs');
+const path = require('path');
+
+let mainWindow;
+
+// 存储黑白名单的文件路径
+const userDataPath = app.getPath('userData');
+const accessListsPath = path.join(userDataPath, 'accessLists.json');
+
+// 初始化黑白名单
+let accessLists = {
+  allowedDomains: [],
+  blockedDomains: []
+};
+
+// 加载现有列表或初始化
+if (fs.existsSync(accessListsPath)) {
+  try {
+    const data = fs.readFileSync(accessListsPath, 'utf-8');
+    accessLists = JSON.parse(data);
+  } catch (err) {
+    console.error('读取访问列表错误:', err);
+  }
+} else {
+  accessLists = {
+    allowedDomains: ['localhost:3000', 'pb.zj96596.com', 'bilibili.com'],
+    blockedDomains: ['malicious.com', 'ads.domain']
+  };
+  fs.writeFileSync(accessListsPath, JSON.stringify(accessLists, null, 2), 'utf-8');
+}
+
+function isValidURL(url) {
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.replace('www.', '');
+
+    // 白名单优先
+    if (accessLists.allowedDomains.length > 0) {
+      return accessLists.allowedDomains.some(domain => hostname.endsWith(domain));
+    }
+    if (!['http:', 'https:'].includes(parsed.protocol)) return false;
+    // 黑名单检查
+    return !accessLists.blockedDomains.some(domain => hostname.endsWith(domain));
+  } catch {
+    return false; // 无效URL直接拦截
+  }
+}
+
+function createWindow() {
+  console.log('当前运行模式:', process.env.NODE_ENV);
+  console.log('应用路径:', app.getAppPath());
+  mainWindow = new BrowserWindow({
+    kiosk: true,
+    fullscreen: true,
+    alwaysOnTop: true,
+    resizable: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: true,
+      allowRunningInsecureContent: false,
+      preload: path.join(__dirname, 'preload.js'),
+    }
+  });
+
+  mainWindow.loadFile(path.join(__dirname, '../build/index.html')).catch(err => {
+    console.error('加载失败，当前路径:', __dirname);
+    console.error('完整路径:', path.join(__dirname, '../build/index.html'));
+    mainWindow.loadURL('data:text/html;charset=utf-8,<h1>应用加载失败，请执行 npm run build</h1>');
+  });
+
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (!isValidURL(url)) {
+      event.preventDefault();
+      console.warn('访问被阻止:', url);
+      mainWindow.loadURL(`data:text/html;<h1>禁止访问 ${new URL(url).hostname}</h1>`);
+    }
+  });
+
+  mainWindow.webContents.on('new-window', (event, url) => {
+    if (!isValidURL(url)) {
+      event.preventDefault();
+      console.warn('新窗口访问被阻止:', url);
+      return;
+    }
+    event.preventDefault();
+
+    const newWindow = new BrowserWindow({
+      width: 800,
+      height: 600,
+      autoHideMenuBar: true,
+      frame: false,
+      kiosk: true,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        webSecurity: true,
+        devTools: false
+      }
+    });
+
+    newWindow.loadURL(url);
+    newWindow.show();
+  });
+
+  mainWindow.setMinimumSize(1024, 768);
+
+  mainWindow.on('close', (event) => {
+    event.preventDefault();
+  });
+
+  mainWindow.on('blur', () => {
+    mainWindow.focus();
+  });
+}
+
+ipcMain.on('open-ebank', () => {
+  const loginWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true
+    }
+  });
+
+  loginWindow.loadURL('https://pb.zj96596.com/#/login?redirect=%2F');
+
+  loginWindow.webContents.on('did-navigate', (event, url) => {
+    if (url.includes('/dashboard')) {
+      mainWindow.webContents.send('login-success');
+      loginWindow.close();
+    }
+  });
+});
+
+ipcMain.handle('open-file-dialog', async (event, options) => {
+  const { dialog } = require('electron');
+  try {
+    const result = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile'],
+      filters: options?.filters || [{ name: 'All Files', extensions: ['*'] }],
+      securityScopedBookmarks: true
+    });
+
+    if (result.canceled || !result.filePaths?.length) return null;
+
+    const filePath = result.filePaths[0];
+    return {
+      path: filePath,
+      name: path.basename(filePath),
+      size: fs.statSync(filePath).size,
+      content: fs.readFileSync(filePath, 'utf-8')
+    };
+  } catch (error) {
+    console.error('文件选择失败:', error);
+    return { error: error.message };
+  }
+});
+
+ipcMain.handle('open-system-file', async () => {
+  const { dialog } = require('electron');
+  try {
+    const { filePaths } = await dialog.showOpenDialog({
+      properties: ['openFile'],
+      title: '选择数据文件',
+      filters: [
+        { name: '文本文件', extensions: ['txt', 'json'] },
+        { name: '所有文件', extensions: ['*'] }
+      ],
+      securityScopedBookmarks: true
+    });
+
+    if (!filePaths || filePaths.length === 0) return null;
+
+    const filePath = filePaths[0];
+    return {
+      path: filePath,
+      content: fs.readFileSync(filePath, 'utf-8'),
+      stats: fs.statSync(filePath)
+    };
+  } catch (err) {
+    console.error('文件操作失败:', err);
+    throw new Error('FILE_OPERATION_FAILED: ' + err.message);
+  }
+});
+
+ipcMain.handle('read-file', async (_, filename) => {
+  const filePath = path.join(app.getPath('userData'), filename);
+  try {
+    return fs.readFileSync(filePath, 'utf-8');
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
+  }
+});
+
+ipcMain.handle('get-system-info', async () => {
+  const os = require('os');
+  return {
+    arch: os.arch(),
+    platform: os.platform(),
+    totalMem: Math.round(os.totalmem() / 1024 / 1024),
+    freeMem: Math.round(os.freemem() / 1024 / 1024),
+    uptime: Math.round(os.uptime() / 3600)
+  };
+});
+
+ipcMain.handle('save-file', async (_, filename, data) => {
+  const filePath = path.join(app.getPath('userData'), filename);
+  fs.writeFileSync(filePath, data);
+  return true;
+});
+
+// 新增 IPC 通道：获取和保存黑白名单
+ipcMain.handle('get-access-lists', () => {
+  return accessLists;
+});
+
+ipcMain.handle('save-access-lists', (event, newAccessLists) => {
+  accessLists = newAccessLists;
+  try {
+    fs.writeFileSync(accessListsPath, JSON.stringify(accessLists, null, 2), 'utf-8');
+    return { success: true };
+  } catch (err) {
+    console.error('保存访问列表错误:', err);
+    return { success: false, error: err.message };
+  }
+});
+
+app.whenReady().then(() => {
+  createWindow();
+
+  globalShortcut.register('Alt+F4', () => {
+    console.log('Alt+F4 已被拦截');
+    return true;
+  });
+
+  globalShortcut.register('CommandOrControl+Q', () => {
+    console.log('Ctrl+Q 已被拦截');
+    return true;
+  });
+
+  globalShortcut.register('Escape', () => {
+    console.log('ESC 键已被拦截');
+    return true;
+  });
+
+  globalShortcut.register('Ctrl+Shift+Q', () => {
+    app.quit();
+  });
+});
+
+app.on('ready', () => {
+  globalShortcut.register('Control+Alt+Q', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.close();
+    }
+  });
+});
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
+});
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+});

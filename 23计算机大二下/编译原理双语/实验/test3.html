@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLR(1) 语法分析器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        table th, table td {
+            padding: 0.75rem;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .highlight-reduce {
+            background-color: #fef3c7; /* amber-100 */
+        }
+        .highlight-shift {
+            background-color: #dbeafe; /* blue-100 */
+        }
+        .highlight-accept {
+            background-color: #dcfce7; /* green-100 */
+        }
+        .highlight-error {
+            background-color: #fee2e2; /* red-100 */
+        }
+        .code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            background-color: #f3f4f6; /* gray-100 */
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">SLR(1) 语法分析器</h1>
+            <p class="mt-2 text-lg text-gray-600">用于分析简单算术表达式</p>
+        </header>
+
+        <main class="space-y-8">
+            <!-- Grammar Definition -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-2">文法 G</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-lg">
+                    <div><span class="font-bold">E → E + T</span></div>
+                    <div><span class="font-bold">E → T</span></div>
+                    <div><span class="font-bold">T → T * F</span></div>
+                    <div><span class="font-bold">T → F</span></div>
+                    <div><span class="font-bold">F → (E)</span></div>
+                    <div><span class="font-bold">F → id</span></div>
+                </div>
+            </div>
+
+            <!-- Input Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">输入分析串</h2>
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <input type="text" id="inputString" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" value="(a+b)*c+(d+e)">
+                    <button id="parseButton" class="w-full sm:w-auto bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform transform hover:scale-105">
+                        开始分析
+                    </button>
+                </div>
+                 <p class="mt-3 text-sm text-gray-500">提示: 任何单个字母 (a-z) 都将被视为 <span class="code">id</span>。</p>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results" class="space-y-8" style="display: none;">
+                <!-- Analysis Steps -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-semibold mb-4">语法分析过程</h2>
+                    <div id="analysisStepsContainer" class="table-container border border-gray-200 rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-100 sticky top-0">
+                                <tr>
+                                    <th class="w-1/12">步骤</th>
+                                    <th class="w-4/12">分析栈</th>
+                                    <th class="w-4/12">输入串</th>
+                                    <th class="w-3/12">动作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analysisSteps" class="divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                    <div id="finalResult" class="mt-4 text-center text-xl font-bold"></div>
+                </div>
+
+                <!-- Generated Sets and Tables -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-semibold mb-4">自动生成的辅助信息</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-3">FIRST 集</h3>
+                            <div id="firstSets" class="p-4 bg-gray-50 rounded-lg border text-sm space-y-1"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-3">FOLLOW 集</h3>
+                            <div id="followSets" class="p-4 bg-gray-50 rounded-lg border text-sm space-y-1"></div>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <h3 class="text-xl font-semibold mb-3">SLR(1) 分析表 (ACTION / GOTO)</h3>
+                        <div id="parsingTableContainer" class="table-container border border-gray-200 rounded-lg">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                <thead id="parsingTableHead" class="bg-gray-100 sticky top-0"></thead>
+                                <tbody id="parsingTableBody" class="divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+        
+        <footer class="text-center mt-12 py-4 border-t">
+            <p class="text-gray-500">一个结合编译原理与Web技术的SLR(1)分析器实现</p>
+        </footer>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. GRAMMAR DEFINITION ---
+        const productions = [
+            { nonTerminal: "E'", derives: ["E"] },      // Augmented Grammar Rule 0
+            { nonTerminal: "E", derives: ["E", "+", "T"] }, // Rule 1
+            { nonTerminal: "E", derives: ["T"] },           // Rule 2
+            { nonTerminal: "T", derives: ["T", "*", "F"] }, // Rule 3
+            { nonTerminal: "T", derives: ["F"] },           // Rule 4
+            { nonTerminal: "F", derives: ["(", "E", ")"] }, // Rule 5
+            { nonTerminal: "F", derives: ["id"] },          // Rule 6
+        ];
+
+        const nonTerminals = [...new Set(productions.map(p => p.nonTerminal))];
+        const terminals = [...new Set(productions.flatMap(p => p.derives).filter(s => !nonTerminals.includes(s)))];
+        const symbols = [...nonTerminals, ...terminals];
+        const eof = '$';
+        terminals.push(eof);
+        
+        // --- 2. CORE SLR(1) PARSER LOGIC ---
+
+        /**
+         * Computes the FIRST sets for all non-terminals.
+         * @returns {Map<string, Set<string>>} A map from non-terminal to its FIRST set.
+         */
+        function computeFirstSets() {
+            const firstSets = new Map(nonTerminals.map(nt => [nt, new Set()]));
+            let changed = true;
+            while (changed) {
+                changed = false;
+                for (const p of productions) {
+                    const nonTerminal = p.nonTerminal;
+                    const rhs = p.derives;
+                    const firstOfRhs = rhs[0];
+
+                    if (terminals.includes(firstOfRhs) && !firstSets.get(nonTerminal).has(firstOfRhs)) {
+                        firstSets.get(nonTerminal).add(firstOfRhs);
+                        changed = true;
+                    } else if (nonTerminals.includes(firstOfRhs)) {
+                        for (const symbol of firstSets.get(firstOfRhs)) {
+                            if (!firstSets.get(nonTerminal).has(symbol)) {
+                                firstSets.get(nonTerminal).add(symbol);
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+            return firstSets;
+        }
+
+        const firstSets = computeFirstSets();
+
+        /**
+         * Computes the FOLLOW sets for all non-terminals.
+         * @returns {Map<string, Set<string>>} A map from non-terminal to its FOLLOW set.
+         */
+        function computeFollowSets() {
+            const followSets = new Map(nonTerminals.map(nt => [nt, new Set()]));
+            followSets.get(productions[0].nonTerminal).add(eof);
+            let changed = true;
+            while (changed) {
+                changed = false;
+                for (const p of productions) {
+                    const nonTerminal = p.nonTerminal;
+                    const rhs = p.derives;
+                    for (let i = 0; i < rhs.length; i++) {
+                        const symbol = rhs[i];
+                        if (nonTerminals.includes(symbol)) {
+                            const nextSymbol = rhs[i + 1];
+                            if (nextSymbol) {
+                                if (terminals.includes(nextSymbol)) {
+                                    if (!followSets.get(symbol).has(nextSymbol)) {
+                                        followSets.get(symbol).add(nextSymbol);
+                                        changed = true;
+                                    }
+                                } else if (nonTerminals.includes(nextSymbol)) {
+                                    for (const first of firstSets.get(nextSymbol)) {
+                                        if (!followSets.get(symbol).has(first)) {
+                                            followSets.get(symbol).add(first);
+                                            changed = true;
+                                        }
+                                    }
+                                }
+                            } else {
+                                for (const follow of followSets.get(nonTerminal)) {
+                                    if (!followSets.get(symbol).has(follow)) {
+                                        followSets.get(symbol).add(follow);
+                                        changed = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return followSets;
+        }
+
+        const followSets = computeFollowSets();
+        
+        /**
+         * Represents an LR(0) item.
+         * @param {number} prodIndex - Index of the production in the `productions` array.
+         * @param {number} dotPos - Position of the dot in the RHS of the production.
+         */
+        class Item {
+            constructor(prodIndex, dotPos) {
+                this.prodIndex = prodIndex;
+                this.dotPos = dotPos;
+            }
+            toString() {
+                const p = productions[this.prodIndex];
+                const rhs = [...p.derives];
+                rhs.splice(this.dotPos, 0, '.');
+                return `${p.nonTerminal} -> ${rhs.join(' ')}`;
+            }
+            isSame(other) {
+                return this.prodIndex === other.prodIndex && this.dotPos === other.dotPos;
+            }
+        }
+
+        /**
+         * Computes the closure of a set of LR(0) items.
+         * @param {Item[]} items - The initial set of items.
+         * @returns {Item[]} The closure set.
+         */
+        function closure(items) {
+            const closureSet = [...items];
+            let changed = true;
+            while (changed) {
+                changed = false;
+                const itemsToAdd = [];
+                for (const item of closureSet) {
+                    const p = productions[item.prodIndex];
+                    const symbolAfterDot = p.derives[item.dotPos];
+                    if (nonTerminals.includes(symbolAfterDot)) {
+                        for (let i = 0; i < productions.length; i++) {
+                            if (productions[i].nonTerminal === symbolAfterDot) {
+                                const newItem = new Item(i, 0);
+                                if (!closureSet.some(it => it.isSame(newItem)) && !itemsToAdd.some(it => it.isSame(newItem))) {
+                                    itemsToAdd.push(newItem);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (itemsToAdd.length > 0) {
+                    closureSet.push(...itemsToAdd);
+                    changed = true;
+                }
+            }
+            return closureSet;
+        }
+
+        /**
+         * Computes the GOTO set for a given state and symbol.
+         * @param {Item[]} state - The current state (a set of items).
+         * @param {string} symbol - The grammar symbol for the transition.
+         * @returns {Item[]} The new state.
+         */
+        function goTo(state, symbol) {
+            const newItems = [];
+            for (const item of state) {
+                const p = productions[item.prodIndex];
+                if (p.derives[item.dotPos] === symbol) {
+                    newItems.push(new Item(item.prodIndex, item.dotPos + 1));
+                }
+            }
+            return closure(newItems);
+        }
+        
+        /**
+         * Builds the canonical collection of LR(0) item sets (the states of the DFA).
+         * @returns {Item[][]} An array of states.
+         */
+        function buildCanonicalCollection() {
+            const startItem = new Item(0, 0);
+            const C = [closure([startItem])];
+            const queue = [0];
+
+            while(queue.length > 0) {
+                const i = queue.shift();
+                const I = C[i];
+                for (const symbol of symbols) {
+                    const J = goTo(I, symbol);
+                    if (J.length > 0) {
+                        const existingStateIndex = C.findIndex(state => 
+                            state.length === J.length && state.every(item => J.some(jItem => jItem.isSame(item)))
+                        );
+                        if (existingStateIndex === -1) {
+                            C.push(J);
+                            queue.push(C.length - 1);
+                        }
+                    }
+                }
+            }
+            return C;
+        }
+
+        const canonicalCollection = buildCanonicalCollection();
+
+        /**
+         * Builds the SLR(1) parsing table (ACTION and GOTO parts).
+         * @returns {{action: Map<number, Map<string, string>>, goTo: Map<number, Map<string, number>>}} The parsing tables.
+         */
+        function buildSLRTable() {
+            const action = new Map();
+            const goToTable = new Map();
+
+            for (let i = 0; i < canonicalCollection.length; i++) {
+                action.set(i, new Map());
+                goToTable.set(i, new Map());
+
+                const state = canonicalCollection[i];
+                for (const item of state) {
+                    const p = productions[item.prodIndex];
+                    const symbolAfterDot = p.derives[item.dotPos];
+
+                    // Shift or GOTO
+                    if (symbolAfterDot) {
+                        const nextStateItems = goTo(state, symbolAfterDot);
+                        const nextStateIndex = canonicalCollection.findIndex(s => 
+                            s.length === nextStateItems.length && s.every(it => nextStateItems.some(nsIt => nsIt.isSame(it)))
+                        );
+                        
+                        if (nextStateIndex !== -1) {
+                            if (terminals.includes(symbolAfterDot)) {
+                                // Shift action
+                                action.get(i).set(symbolAfterDot, `s${nextStateIndex}`);
+                            } else {
+                                // GOTO action
+                                goToTable.get(i).set(symbolAfterDot, nextStateIndex);
+                            }
+                        }
+                    }
+                    // Reduce or Accept
+                    else {
+                        if (item.prodIndex === 0) { // Accept
+                            action.get(i).set(eof, 'acc');
+                        } else { // Reduce
+                            const follow = followSets.get(p.nonTerminal);
+                            for (const terminal of follow) {
+                                if (action.get(i).has(terminal)) {
+                                    console.warn(`Conflict in state ${i} on terminal ${terminal}: ${action.get(i).get(terminal)} vs r${item.prodIndex}`);
+                                }
+                                action.get(i).set(terminal, `r${item.prodIndex}`);
+                            }
+                        }
+                    }
+                }
+            }
+            return { action, goTo: goToTable };
+        }
+
+        const { action: actionTable, goTo: goToTable } = buildSLRTable();
+
+        /**
+         * Tokenizes the input string into a list of grammar symbols.
+         * @param {string} str - The input string.
+         * @returns {string[] | null} Array of tokens or null on error.
+         */
+        function tokenize(str) {
+            const tokens = [];
+            let i = 0;
+            const sanitizedStr = str.replace(/\s+/g, '');
+            while (i < sanitizedStr.length) {
+                const char = sanitizedStr[i];
+                if (terminals.includes(char)) {
+                    tokens.push(char);
+                    i++;
+                } else if (/[a-zA-Z]/.test(char)) { // Simple tokenizer: any letter is an 'id'
+                    tokens.push('id');
+                    i++;
+                } else {
+                    alert(`Invalid character found in input: ${char}`);
+                    return null;
+                }
+            }
+            tokens.push(eof);
+            return tokens;
+        }
+
+        /**
+         * The main parser driver loop.
+         * @param {string[]} tokens - The tokenized input string.
+         * @returns {object} An object containing the steps of the analysis and the final result.
+         */
+        function parse(tokens) {
+            const stack = [0];
+            let input = [...tokens];
+            const steps = [];
+            let stepCount = 1;
+
+            while (true) {
+                const state = stack[stack.length - 1];
+                const token = input[0];
+                const action = actionTable.get(state)?.get(token);
+                
+                const currentStep = {
+                    step: stepCount++,
+                    stack: stack.join(' '),
+                    input: input.join(' '),
+                    action: ''
+                };
+
+                if (action) {
+                    if (action === 'acc') {
+                        currentStep.action = '接受 (Accept)';
+                        steps.push(currentStep);
+                        return { steps, result: 'Accepted' };
+                    } else if (action.startsWith('s')) {
+                        const nextState = parseInt(action.substring(1));
+                        currentStep.action = `移入 (Shift) ${token}, 转到状态 ${nextState}`;
+                        steps.push(currentStep);
+                        stack.push(token, nextState);
+                        input.shift();
+                    } else if (action.startsWith('r')) {
+                        const prodIndex = parseInt(action.substring(1));
+                        const p = productions[prodIndex];
+                        const popCount = p.derives.length * 2;
+                        currentStep.action = `归约 (Reduce) by ${p.nonTerminal} → ${p.derives.join(' ')}`;
+                        steps.push(currentStep);
+                        
+                        stack.splice(-popCount, popCount);
+
+                        const prevState = stack[stack.length - 1];
+                        const nextState = goToTable.get(prevState)?.get(p.nonTerminal);
+                        stack.push(p.nonTerminal, nextState);
+                    }
+                } else {
+                    currentStep.action = '错误 (Error)';
+                    steps.push(currentStep);
+                    return { steps, result: 'Error' };
+                }
+            }
+        }
+        
+        // --- 3. UI MANIPULATION ---
+        const resultsDiv = document.getElementById('results');
+        const parseButton = document.getElementById('parseButton');
+        const inputStringEl = document.getElementById('inputString');
+        
+        function displaySets() {
+            const firstSetsEl = document.getElementById('firstSets');
+            firstSetsEl.innerHTML = '';
+            for (const [nt, set] of firstSets.entries()) {
+                firstSetsEl.innerHTML += `<div><span class="font-semibold code">${nt}</span>: { ${[...set].join(', ')} }</div>`;
+            }
+
+            const followSetsEl = document.getElementById('followSets');
+            followSetsEl.innerHTML = '';
+            for (const [nt, set] of followSets.entries()) {
+                followSetsEl.innerHTML += `<div><span class="font-semibold code">${nt}</span>: { ${[...set].join(', ')} }</div>`;
+            }
+        }
+
+        function displayParsingTable() {
+            const tableHead = document.getElementById('parsingTableHead');
+            const tableBody = document.getElementById('parsingTableBody');
+            
+            // Header
+            const displayTerminals = terminals.filter(t => t !== 'ε');
+            const displayNonTerminals = nonTerminals.filter(nt => nt !== "E'");
+            let headHTML = '<tr><th rowspan="2">State</th>';
+            headHTML += `<th colspan="${displayTerminals.length}">ACTION</th>`;
+            headHTML += `<th colspan="${displayNonTerminals.length}">GOTO</th></tr>`;
+            headHTML += '<tr>';
+            displayTerminals.forEach(t => headHTML += `<th>${t}</th>`);
+            displayNonTerminals.forEach(nt => headHTML += `<th>${nt}</th>`);
+            headHTML += '</tr>';
+            tableHead.innerHTML = headHTML;
+
+            // Body
+            let bodyHTML = '';
+            for (let i = 0; i < canonicalCollection.length; i++) {
+                bodyHTML += `<tr><td class="font-semibold">${i}</td>`;
+                const actions = actionTable.get(i);
+                const gotos = goToTable.get(i);
+                displayTerminals.forEach(t => {
+                    const act = actions.get(t) || '';
+                    bodyHTML += `<td>${act}</td>`;
+                });
+                displayNonTerminals.forEach(nt => {
+                    const gotoState = gotos.get(nt);
+                    bodyHTML += `<td>${gotoState !== undefined ? gotoState : ''}</td>`;
+                });
+                bodyHTML += '</tr>';
+            }
+            tableBody.innerHTML = bodyHTML;
+        }
+
+        function displayAnalysis(steps, result) {
+            const stepsBody = document.getElementById('analysisSteps');
+            stepsBody.innerHTML = '';
+            steps.forEach(step => {
+                let rowClass = '';
+                if (step.action.includes('归约')) rowClass = 'highlight-reduce';
+                if (step.action.includes('移入')) rowClass = 'highlight-shift';
+                if (step.action.includes('接受')) rowClass = 'highlight-accept';
+                if (step.action.includes('错误')) rowClass = 'highlight-error';
+
+                stepsBody.innerHTML += `
+                    <tr class="${rowClass}">
+                        <td>${step.step}</td>
+                        <td class="code">${step.stack}</td>
+                        <td class="code">${step.input}</td>
+                        <td>${step.action}</td>
+                    </tr>
+                `;
+            });
+
+            const finalResultEl = document.getElementById('finalResult');
+
+            if (result === 'Accepted') {
+                finalResultEl.textContent = '分析成功: 输入串被接受';
+                finalResultEl.className = 'mt-4 text-center text-xl font-bold text-green-600';
+            } else {
+                finalResultEl.textContent = '分析失败: 发现语法错误';
+                finalResultEl.className = 'mt-4 text-center text-xl font-bold text-red-600';
+            }
+        }
+        
+        parseButton.addEventListener('click', () => {
+            const inputStr = inputStringEl.value;
+            if (!inputStr) {
+                alert("请输入要分析的字符串！");
+                return;
+            }
+            const tokens = tokenize(inputStr);
+            if (tokens) {
+                const { steps, result } = parse(tokens);
+                resultsDiv.style.display = 'block';
+                displayAnalysis(steps, result);
+            }
+        });
+
+        // Initial display of static info
+        displaySets();
+        displayParsingTable();
+
+    });
+    </script>
+</body>
+</html>
